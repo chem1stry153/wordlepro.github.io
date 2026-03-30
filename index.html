@@ -493,6 +493,48 @@
             opacity: 0;
             pointer-events: none;
         }
+
+        .toast {
+            background-color: var(--text);
+            color: var(--bg);
+            padding: 12px 18px;
+            border-radius: 4px;
+            font-family: 'Libre Franklin', sans-serif;
+            font-weight: 700;
+            margin-bottom: 10px;
+            width: fit-content;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            opacity: 1;
+
+            /* 核心修改：添加高度和边距的过渡 */
+            transition:
+                opacity 0.4s ease,
+                transform 0.4s ease,
+                max-height 0.4s ease,
+                margin 0.4s ease,
+                padding 0.4s ease;
+
+            overflow: hidden;
+            /* 必须：防止收缩时内容溢出 */
+            max-height: 100px;
+            /* 给一个足够大的初始高度 */
+        }
+
+        /* 消失时的状态 */
+        .toast.hide {
+            opacity: 0;
+            transform: translateY(-20px);
+            /* 向上轻微漂移 */
+            max-height: 0;
+            /* 高度缩减到0 */
+            margin-bottom: 0;
+            /* 间距缩减到0 */
+            padding-top: 0;
+            /* 内边距缩减到0 */
+            padding-bottom: 0;
+            border: 0;
+        }
     </style>
 </head>
 
@@ -1004,6 +1046,27 @@
 
         // 在 initGame 或脚本末尾调用初始化函数
         initTheme();
+
+        function showToast(msg, persistent = false) {
+            const t = document.createElement("div");
+            t.className = "toast";
+            t.textContent = msg;
+            document.getElementById("toast-container").appendChild(t);
+
+            if (persistent) {
+                gameOverToast = t;
+            } else {
+                // 1.8秒后开始消失动画
+                setTimeout(() => {
+                    t.classList.add("hide"); // 触发 CSS 里的平滑收缩动画
+
+                    // 等待动画结束后（400ms CSS 过渡时间）再彻底移除元素
+                    setTimeout(() => {
+                        t.remove();
+                    }, 450);
+                }, 1800);
+            }
+        }
     </script>
 </body>
 
