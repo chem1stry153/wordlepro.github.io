@@ -717,11 +717,18 @@
         function toggleWordMode() {
             if (isModeChanging || isAnimating) return;
 
+            // 如果有进度，弹出原生确认框
+            if (isGameDirty()) {
+                if (!confirm("Switching modes will restart the game. Continue?")) {
+                    return; // 用户点击取消，直接退出
+                }
+            }
+
             const btn = document.getElementById('mode-toggle-btn');
             const icon = document.getElementById('mode-icon');
 
             isModeChanging = true;
-            btn.disabled = true; // 样式会自动变淡
+            btn.disabled = true;
 
             const STAR_PATH = 'M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z';
             const WORLD_PATH = 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z';
@@ -738,7 +745,6 @@
 
             startNewRound();
 
-            // 5秒后恢复点击
             setTimeout(() => {
                 isModeChanging = false;
                 btn.disabled = false;
@@ -805,22 +811,24 @@
         }
 
         function resetGame() {
-            // 如果正在冷却或正在播放动画，禁止重置
             if (isResetting || isAnimating) return;
 
-            const btn = document.getElementById('reset-btn');
+            // 如果有进度，弹出原生确认框
+            if (isGameDirty()) {
+                if (!confirm("Are you sure you want to restart? Your current progress will be lost.")) {
+                    return; // 用户点击取消，直接退出
+                }
+            }
 
-            // 开启冷却锁
+            const btn = document.getElementById('reset-btn');
             isResetting = true;
-            if (btn) btn.disabled = true; // 按钮变淡并禁点
+            if (btn) btn.disabled = true;
 
             if (document.activeElement) document.activeElement.blur();
 
-            // 执行原有的游戏重置逻辑
             startNewRound();
             showToast("New Game Started");
 
-            // 5秒后解除冷却
             setTimeout(() => {
                 isResetting = false;
                 if (btn) btn.disabled = false;
@@ -1111,6 +1119,14 @@
                     }, 450);
                 }, 1800);
             }
+        }
+        // --- 辅助函数：判断当前是否有游戏进度 ---
+        function isGameDirty() {
+            // 满足以下任一条件即视为“有进度”：
+            // 1. 已经提交过至少一个单词 (guesses.length > 0)
+            // 2. 当前行已经输入了字母 (currentGuess.length > 0)
+            // 且游戏还在进行中 (gameStatus === "playing")
+            return (guesses.length > 0 || currentGuess.length > 0) && gameStatus === "playing";
         }
     </script>
 </body>
