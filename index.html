@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Wordle Portal</title>
+    <title>Wordle</title>
     <link rel="icon" type="image/png" href="wordle_logo_32x32.png">
 
     <!-- 引入字体 -->
@@ -168,24 +168,24 @@
         const i18n = {
             en: {
                 wordleTitle: "Standard Mode",
-                wordleDesc: "The classic experience. Get 6 chances to guess a 5-letter word. After each guess, tiles change color: Green means the letter is correct and in the right spot; Yellow means the letter is in the word but wrong spot; Gray means it's not in the word.",
+                wordleDesc: "The classic experience. Get <strong>6 chances</strong> to guess a 5-letter word. <strong>After each guess, tiles change color</strong>: Green means the letter is correct and in the right spot; Yellow means the letter is in the word but wrong spot; Gray means it's not in the word.",
                 hardTitle: "Logic Mode",
-                hardDesc: "A Mastermind-style challenge. You get 10 attempts. Unlike standard mode, you won't know which specific positions are correct. Each row only displays the total count of matched letters (Green/Yellow/Gray) as a summary."
+                hardDesc: "A Mastermind-style challenge. You get <strong>10 attempts</strong> attempts. Unlike standard mode, <strong>you won't know which specific positions are correct</strong>. Each row only displays the total count of matched letters (Green/Yellow/Gray) as a summary."
             },
             zh: {
                 wordleTitle: "标准模式",
-                wordleDesc: "经典玩法。共有 6 次机会猜出 5 字母单词。每次猜测后，方块颜色会改变：绿色代表字母和位置完全正确；黄色代表字母正确但位置错误；灰色代表单词中不包含该字母。",
+                wordleDesc: "经典玩法。共有 <strong>6 次机会</strong>猜出 5 字母单词。<strong>每次猜测后，方块颜色会改变</strong>：绿色代表字母和位置完全正确；黄色代表字母正确但位置错误；灰色代表单词中不包含该字母。",
                 hardTitle: "逻辑模式",
-                hardDesc: "珠玑妙算（Mastermind）风格。共有 10 次机会。系统不会告知具体哪个字母正确，而是在每行末尾通过汇总方块显示位置正确（绿）、字母正确（黄）和错误字母的总个数。"
+                hardDesc: "珠玑妙算（Mastermind）风格。共有 <strong>10 次机会</strong>。<strong>系统不会告知具体哪个字母正确</strong>，而是在每行末尾通过汇总方块显示位置正确（绿）、字母正确（黄）和错误字母的总个数。"
             }
         };
 
         function updateUILanguage() {
             const t = i18n[currentLang];
             document.getElementById('title-wordle').textContent = t.wordleTitle;
-            document.getElementById('desc-wordle').textContent = t.wordleDesc;
+            document.getElementById('desc-wordle').innerHTML = t.wordleDesc;
             document.getElementById('title-hard').textContent = t.hardTitle;
-            document.getElementById('desc-hard').textContent = t.hardDesc;
+            document.getElementById('desc-hard').innerHTML = t.hardDesc;
             document.getElementById('lang-select').value = currentLang;
         }
 
