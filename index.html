@@ -86,30 +86,6 @@
             gap: 5px;
         }
 
-        .header-settings {
-            position: absolute;
-            right: 10px;
-            display: flex;
-            align-items: center;
-        }
-
-        #lang-select {
-            background: var(--bg);
-            color: var(--text);
-            border: 1px solid var(--border-empty);
-            border-radius: 4px;
-            padding: 4px 8px;
-            font-family: 'Libre Franklin', sans-serif;
-            font-size: 14px;
-            cursor: pointer;
-            outline: none;
-            transition: border-color 0.2s;
-        }
-
-        #lang-select:hover {
-            border-color: var(--border-filled);
-        }
-
         .icon-btn {
             background: none;
             border: none;
@@ -448,6 +424,28 @@
             transition: opacity 0.4s ease;
         }
 
+        .toast-green {
+            color: var(--green);
+            /* 增加亮度，防止在黑色背景下看不清 */
+            filter: brightness(1.2);
+            font-weight: 900;
+        }
+
+        .toast-yellow {
+            color: var(--yellow);
+            filter: brightness(1.2);
+            font-weight: 900;
+        }
+
+        /* 高对比度模式适配 */
+        body.high-contrast .toast-green {
+            color: var(--green);
+        }
+
+        body.high-contrast .toast-yellow {
+            color: var(--yellow);
+        }
+
         #loading {
             position: absolute;
             top: 50%;
@@ -673,6 +671,112 @@
         .modal-btn:hover {
             filter: brightness(1.2);
         }
+
+        /* 设置面板专用样式 */
+        .settings-content {
+            max-width: 480px;
+            padding: 16px 32px;
+            text-align: left;
+        }
+
+        .settings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .settings-header h2 {
+            margin: 0;
+            font-size: 16px;
+            letter-spacing: 0.1em;
+            color: var(--text-muted);
+        }
+
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 0;
+            border-bottom: 1px solid var(--header-border);
+        }
+
+        .setting-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .setting-label {
+            font-size: 18px;
+        }
+
+        .setting-desc {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* Switch 开关样式 */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 32px;
+            height: 20px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--gray);
+            transition: .4s;
+            border-radius: 20px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 14px;
+            width: 14px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked+.slider {
+            background-color: var(--green);
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(12px);
+        }
+
+        /* 高对比度模式下的根变量覆盖 */
+        body.high-contrast {
+            --green: #f5793a;
+            /* 橘色替代绿色 */
+            --yellow: #85c0f9;
+            /* 浅蓝替代黄色 */
+        }
+
+        /* 设置中的 Select 样式 */
+        #lang-select-settings {
+            background: var(--bg);
+            color: var(--text);
+            border: 1px solid var(--border-empty);
+            padding: 5px;
+            border-radius: 4px;
+        }
     </style>
 </head>
 
@@ -686,6 +790,7 @@
             <button class="play-btn" onclick="dismissStartScreen()">Play</button>
         </div>
     </div>
+    <!-- Header 部分 -->
     <header>
         <div class="header-controls">
             <button class="icon-btn" id="reset-btn" title="Restart" onclick="resetGame()">
@@ -694,35 +799,95 @@
                         d="M17.65,6.35C16.2,4.9 14.21,4 12,4c-4.42,0-7.99,3.58-7.99,8s3.57,8,7.99,8c3.73,0,6.84-2.55,7.73-6h-2.08 c-0.82,2.33-3.04,4-5.65,4c-3.31,0-6-2.69-6-6s2.69-6,6-6c1.66,0,3.14,0.69,4.22,1.78L13,11h7V4L17.65,6.35z" />
                 </svg>
             </button>
+            <button class="icon-btn" id="mode-toggle-btn" title="Toggle Mode" onclick="toggleWordMode()">
+                <svg id="mode-icon" viewBox="0 0 24 24">
+                    <path
+                        d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                </svg>
+            </button>
             <button class="icon-btn" title="Hints" onclick="toggleHints()">
                 <svg viewBox="0 0 24 24">
                     <path
                         d="M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7zm2.85 11.1l-.85.6V16h-4v-1.3l-.85-.6C7.8 13.15 7 11.18 7 9c0-2.76 2.24-5 5-5s5 2.24 5 5c0 2.18-.8 4.15-2.15 5.1z" />
                 </svg>
             </button>
-            <button class="icon-btn" title="Toggle Theme" onclick="toggleTheme()">
-                <svg id="theme-icon" viewBox="0 0 24 24">
-                    <!-- 这里会通过 JS 动态插入太阳或月亮图标 -->
-                </svg>
-            </button>
-            <button class="icon-btn" id="mode-toggle-btn" title="Toggle Mode" onclick="toggleWordMode()">
-                <svg id="mode-icon" viewBox="0 0 24 24">
-                    <!-- 初始图标（正常模式：星星） -->
-                    <path
-                        d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-                </svg>
-            </button>
         </div>
-        <img src="wordle-icon.svg" alt="Logo">
-        Wordle
+
+        <img src="wordle-icon.svg" alt="Logo"> Wordle
 
         <div class="header-settings">
-            <select id="lang-select" onchange="changeLanguage(this.value)">
-                <option value="en">English</option>
-                <option value="zh">中文</option>
-            </select>
+            <button class="icon-btn" onclick="openSettings()">
+                <svg viewBox="0 0 24 24">
+                    <path
+                        d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.81,11.69,4.81,12.01c0,0.31,0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z" />
+                </svg>
+            </button>
         </div>
     </header>
+
+    <!-- 设置模态框 -->
+    <div id="settings-modal" class="modal-overlay">
+        <div class="modal-content settings-content">
+            <div class="settings-header">
+                <h2 id="settings-title">SETTINGS</h2>
+                <button class="icon-btn" onclick="closeSettings()">
+                    <svg viewBox="0 0 24 24">
+                        <path
+                            d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+                    </svg>
+                </button>
+            </div>
+
+            <div class="setting-item">
+                <div class="setting-text">
+                    <div class="setting-label" id="label-hard-mode">Hard Mode</div>
+                    <div class="setting-desc" id="desc-hard-mode">Any revealed hints must be used in subsequent guesses
+                    </div>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" id="setting-hard-mode" onchange="toggleHardMode(this.checked)">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="setting-item">
+                <div class="setting-text">
+                    <div class="setting-label" id="label-dark-mode">Dark Mode</div>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" id="setting-dark-mode" onchange="toggleTheme(this.checked)">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="setting-item">
+                <div class="setting-text">
+                    <div class="setting-label" id="label-high-contrast">High Contrast Mode</div>
+                    <div class="setting-desc" id="desc-high-contrast">For improved color vision</div>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" id="setting-high-contrast" onchange="toggleHighContrast(this.checked)">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="setting-item">
+                <div class="setting-text">
+                    <div class="setting-label" id="label-language">Language</div>
+                </div>
+                <select id="lang-select-settings" onchange="changeLanguage(this.value)">
+                    <option value="en">English</option>
+                    <option value="zh">中文</option>
+                </select>
+            </div>
+
+            <div class="settings-footer">
+                <p>©
+                    <script>document.write(new Date().getFullYear())</script> WordlePro
+                </p>
+            </div>
+        </div>
+    </div>
 
     <div id="loading">Loading dictionary...</div>
     <div id="toast-container"></div>
@@ -775,6 +940,8 @@
         let gameStatus = "playing";
         let hintsVisible = false;
         let bounceTimeouts = []; // 用于追踪胜利跳动的计时器
+        let hardMode = localStorage.getItem('wordle_hard_mode') === 'true';
+        let highContrast = localStorage.getItem('wordle_high_contrast') === 'true';
 
         let constraints = {
             correct: Array(5).fill(null),
@@ -803,7 +970,17 @@
                 possibleWords: "Possible Words",
                 praises: ["Genius", "Magnificent", "Impressive", "Splendid", "Great", "Phew"],
                 cancel: "Cancel",
-                confirm: "Confirm"
+                confirm: "Confirm",
+                settings: "SETTINGS",
+                hardMode: "Hard Mode",
+                hardModeDesc: "Any revealed hints must be used in subsequent guesses",
+                darkMode: "Dark Mode",
+                highContrast: "High Contrast Mode",
+                highContrastDesc: "For improved color vision",
+                language: "Language",
+                hardModeGreen: "Hard Mode: {pos} letter must be {char}",
+                hardModeYellow: "Hard Mode: Must contain {char}",
+                ordinals: ["1st", "2nd", "3rd", "4th", "5th"]
             },
             zh: {
                 play: "开始游戏",
@@ -819,9 +996,57 @@
                 possibleWords: "候选词汇",
                 praises: ["天才", "太棒了", "出色", "精彩", "不错", "险胜"],
                 cancel: "取消",
-                confirm: "确定"
+                confirm: "确定",
+                settings: "设置",
+                hardMode: "困难模式",
+                hardModeDesc: "所有提示必须在后续猜测中使用",
+                darkMode: "深色模式",
+                highContrast: "高对比度模式",
+                highContrastDesc: "优化颜色区分",
+                language: "语言",
+                hardModeGreen: "困难模式：第 {pos} 个字母必须是 {char}",
+                hardModeYellow: "困难模式：必须包含 {char}",
+                ordinals: ["1", "2", "3", "4", "5"] // 中文直接用数字
             }
         };
+
+
+        // --- 初始化补充 ---
+        function initSettings() {
+            if (highContrast) document.body.classList.add('high-contrast');
+            // 更新设置面板翻译
+            updateUILanguage();
+        }
+
+        // --- 设置面板控制函数 ---
+        function openSettings() {
+            document.getElementById('settings-modal').style.display = 'flex';
+            // 同步开关状态
+            document.getElementById('setting-hard-mode').checked = hardMode;
+            document.getElementById('setting-dark-mode').checked = document.body.classList.contains('dark-mode');
+            document.getElementById('setting-high-contrast').checked = highContrast;
+            document.getElementById('lang-select-settings').value = currentLang;
+        }
+
+        function closeSettings() {
+            document.getElementById('settings-modal').style.display = 'none';
+        }
+
+        function toggleHardMode(checked) {
+            if (checked && isGameDirty()) {
+                showToast(currentLang === 'zh' ? "困难模式只能在游戏开始前开启" : "Hard mode can only be enabled at the start");
+                document.getElementById('setting-hard-mode').checked = false;
+                return;
+            }
+            hardMode = checked;
+            localStorage.setItem('wordle_hard_mode', hardMode);
+        }
+
+        function toggleHighContrast(checked) {
+            highContrast = checked;
+            localStorage.setItem('wordle_high_contrast', highContrast);
+            document.body.classList.toggle('high-contrast', highContrast);
+        }
 
         function updateUILanguage() {
             const t = i18n[currentLang];
@@ -837,7 +1062,13 @@
             document.getElementById('hint-header').firstChild.textContent = t.possibleWords;
 
             // 更新选择框的值
-            document.getElementById('lang-select').value = currentLang;
+            document.getElementById('settings-title').textContent = t.settings;
+            document.getElementById('label-hard-mode').textContent = t.hardMode;
+            document.getElementById('desc-hard-mode').textContent = t.hardModeDesc;
+            document.getElementById('label-dark-mode').textContent = t.darkMode;
+            document.getElementById('label-high-contrast').textContent = t.highContrast;
+            document.getElementById('desc-high-contrast').textContent = t.highContrastDesc;
+            document.getElementById('label-language').textContent = t.language;
 
             // 更新当前的提示列表（词频后缀等）
             updateHintList();
@@ -1119,16 +1350,51 @@
             handleInput(e.key === "Enter" ? "ENTER" : e.key === "Backspace" ? "⌫" : e.key.toUpperCase());
         };
 
-        function validateAndSubmit() {
+        // --- 困难模式逻辑拦截 ---
+        // 修改 validateAndSubmit 函数，在有效性检查后增加困难模式检查：
+        async function validateAndSubmit() {
             if (currentGuess.length < 5) {
                 showToast(i18n[currentLang].notEnough);
-                shakeRow();
-                return;
+                shakeRow(); return;
             }
+
+            // --- 困难模式校验逻辑 ---
+            if (hardMode && guesses.length > 0) {
+                const t = i18n[currentLang];
+
+                // 1. 检查绿色 (正确位置)
+                for (let i = 0; i < 5; i++) {
+                    const requiredChar = constraints.correct[i];
+                    if (requiredChar && currentGuess[i] !== requiredChar) {
+                        const coloredChar = `<span class="toast-green">${requiredChar}</span>`;
+                        // 替换模板中的 {pos} 和 {char}
+                        const msg = t.hardModeGreen
+                            .replace("{pos}", t.ordinals[i])
+                            .replace("{char}", coloredChar);
+
+                        showToast(msg);
+                        shakeRow(); return;
+                    }
+                }
+
+                // 2. 检查黄色 (必须包含)
+                for (let char in constraints.present) {
+                    if (!currentGuess.includes(char)) {
+                        const coloredChar = `<span class="toast-yellow">${char}</span>`;
+                        // 替换模板中的 {char}
+                        const msg = t.hardModeYellow
+                            .replace("{char}", coloredChar);
+
+                        showToast(msg);
+                        shakeRow(); return;
+                    }
+                }
+            }
+            // -----------------------
+
             if (!validGuesses.has(currentGuess)) {
                 showToast(i18n[currentLang].notInList);
-                shakeRow();
-                return;
+                shakeRow(); return;
             }
             submitGuess();
         }
@@ -1242,14 +1508,16 @@
         function showToast(msg, persistent = false) {
             const t = document.createElement("div");
             t.className = "toast";
-            t.textContent = msg;
+            // 核心修改：由 textContent 改为 innerHTML
+            t.innerHTML = msg;
             document.getElementById("toast-container").appendChild(t);
+
             if (persistent) {
                 gameOverToast = t;
             } else {
                 setTimeout(() => {
-                    t.style.opacity = "0";
-                    setTimeout(() => t.remove(), 400);
+                    t.classList.add("hide");
+                    setTimeout(() => t.remove(), 450);
                 }, 1800);
             }
         }
@@ -1311,19 +1579,27 @@
         function initTheme() {
             const savedTheme = localStorage.getItem('theme');
             const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const isDark = savedTheme === 'dark' || (!savedTheme && prefersDark);
 
-            // 如果有保存的偏好则用偏好，否则跟随系统
-            if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
-                document.body.classList.add('dark-mode');
-                document.getElementById('theme-icon').innerHTML = SUN_ICON;
-            } else {
-                document.body.classList.remove('dark-mode');
-                document.getElementById('theme-icon').innerHTML = MOON_ICON;
+            // 应用样式到 body
+            document.body.classList.toggle('dark-mode', isDark);
+
+            // 安全地更新设置面板里的 Checkbox
+            const themeCheckbox = document.getElementById('setting-dark-mode');
+            if (themeCheckbox) {
+                themeCheckbox.checked = isDark;
+            }
+
+            // 安全地更新旧有的 Header 图标 (如果它还存在的话)
+            const themeIcon = document.getElementById('theme-icon');
+            if (themeIcon) {
+                themeIcon.innerHTML = isDark ? SUN_ICON : MOON_ICON;
             }
         }
 
-        function toggleTheme() {
-            const isDark = document.body.classList.toggle('dark-mode');
+        function toggleTheme(checked) {
+            const isDark = checked !== undefined ? checked : !document.body.classList.contains('dark-mode');
+            document.body.classList.toggle('dark-mode', isDark);
             localStorage.setItem('theme', isDark ? 'dark' : 'light');
             document.getElementById('theme-icon').innerHTML = isDark ? SUN_ICON : MOON_ICON;
         }
@@ -1331,7 +1607,7 @@
         function showToast(msg, persistent = false) {
             const t = document.createElement("div");
             t.className = "toast";
-            t.textContent = msg;
+            t.innerHTML = msg;
             document.getElementById("toast-container").appendChild(t);
 
             if (persistent) {
@@ -1348,6 +1624,7 @@
                 }, 1800);
             }
         }
+
         // --- 辅助函数：判断当前是否有游戏进度 ---
         function isGameDirty() {
             // 满足以下任一条件即视为“有进度”：
@@ -1360,7 +1637,11 @@
         updateUILanguage();
         updateDate();
         initStartScreen();
+        initSettings();
         initTheme();
+        if (localStorage.getItem('wordle_high_contrast') === 'true') {
+            document.body.classList.add('high-contrast');
+        }
         initGame();
     </script>
 </body>
