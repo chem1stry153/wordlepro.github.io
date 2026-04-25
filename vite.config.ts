@@ -10,6 +10,7 @@ const __dirname = path.dirname(__filename);
 
 // https://vite.dev/config/
 export default defineConfig({
+  root: path.resolve(__dirname, "src"),
   base: "./",
   plugins: [react(), tailwindcss(), viteSingleFile()],
   resolve: {
@@ -18,6 +19,7 @@ export default defineConfig({
     },
   },
   build: {
-    outDir: "docs",
+    outDir: "../docs",
+    emptyOutDir: true,
   },
 });
