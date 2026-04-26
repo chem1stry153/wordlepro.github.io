@@ -1,0 +1,52 @@
+name: Deploy Vite App to GitHub Pages
+
+on:
+  push:
+    branches: ["main"] # 当你 push 到 main 分支时触发
+
+# 设置 GitHub Pages 部署所需的权限
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# 允许并发部署，但会自动取消进行中的旧部署
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  # 编译任务
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 设置 Node.js 环境
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20 # 使用稳定的 Node 版本
+
+      - name: 安装依赖
+        run: npm install
+
+      - name: 编译 Vite 项目
+        run: npm run build
+
+      - name: 上传编译好的 dist 文件夹作为部署产物
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './dist' # 指向 Vite 默认的输出目录
+
+  # 部署任务
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build # 必须等上面的 build 任务完成后才执行
+    steps:
+      - name: 部署到 GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
