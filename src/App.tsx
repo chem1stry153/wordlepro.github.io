@@ -685,9 +685,11 @@ export default function App() {
     setMessage(language === "zh" ? "用户名已更新" : "Username updated");
   };
 
+  const normalizeGuess = (raw: string) => raw.trim().toLowerCase();
+
   const submitWordleGuess = () => {
     if (locked) return;
-    const guess = input.trim().toLowerCase();
+    const guess = normalizeGuess(input);
     if (!/^[a-z]+$/.test(guess)) {
       setMessage(language === "zh" ? "请输入有效英文单词" : "Enter a valid English word");
       return;
@@ -766,7 +768,7 @@ export default function App() {
     if (locked) return;
 
     if (mode.kind === "semantic") {
-      const guess = semanticInput.trim().toLowerCase();
+      const guess = normalizeGuess(semanticInput);
       if (!guess) return;
       if (!/^[a-z]{3,}$/.test(guess)) {
         setMessage(language === "zh" ? "请输入至少3位英文单词" : "Enter at least 3 English letters");
@@ -788,7 +790,7 @@ export default function App() {
     }
 
     if (mode.kind === "globle") {
-      const guess = globleInput.trim().toLowerCase();
+      const guess = normalizeGuess(globleInput);
       const country = COUNTRIES.find((c) => c.name === guess);
       if (!country) {
         setMessage(language === "zh" ? "请输入国家英文名" : "Enter a valid country name");
@@ -828,7 +830,7 @@ export default function App() {
     }
 
     if (mode.kind === "spellingbee") {
-      const guess = beeInput.trim().toLowerCase();
+      const guess = normalizeGuess(beeInput);
       if (!guess.includes(BEE_PACK.center) || !BEE_PACK.words.includes(guess) || beeFound.includes(guess)) return;
       const next = [...beeFound, guess];
       setBeeFound(next);
@@ -841,15 +843,17 @@ export default function App() {
     }
 
     if (mode.kind === "waffle") {
-      if (waffleInput.trim().toUpperCase() === WAFFLE_PACK.target) {
+      const guess = normalizeGuess(waffleInput).toUpperCase();
+      if (guess === WAFFLE_PACK.target) {
         setLocked(true);
         pushScore(player.name, mode.baseScore + 45, "solved");
       }
+      setWaffleInput("");
       return;
     }
 
     if (mode.kind === "strands") {
-      const guess = strandsInput.trim().toUpperCase();
+      const guess = normalizeGuess(strandsInput).toUpperCase();
       if (STRANDS_PACK.words.includes(guess) && !strandsFound.includes(guess)) {
         const next = [...strandsFound, guess];
         setStrandsFound(next);
@@ -863,7 +867,7 @@ export default function App() {
     }
 
     if (mode.kind === "squaredle") {
-      const guess = squaredleInput.trim().toUpperCase();
+      const guess = normalizeGuess(squaredleInput).toUpperCase();
       if (SQUAREDLE_PACK.words.includes(guess) && !squaredleFound.includes(guess)) {
         const next = [...squaredleFound, guess];
         setSquaredleFound(next);
