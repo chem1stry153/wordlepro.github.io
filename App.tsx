@@ -193,7 +193,7 @@ const QUEENS_SOLUTION = ["A2", "B4", "C1", "D3"];
 const i18n = {
   zh: {
     title: "WORDLES.PRO",
-    sub: "更美观、更整合的全玩法大厅",
+    sub: "更美观、更整合的全玩法大厅-Test",
     language: "语言",
     username: "用户名",
     save: "保存",
